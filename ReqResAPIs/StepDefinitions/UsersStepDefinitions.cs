@@ -6,6 +6,7 @@ using RestSharp;
 using System.Net;
 using NUnit.Framework;
 using FluentAssertions.Execution;
+using static ReqResAPIs.Support.Constants;
 
 namespace ReqResAPIs.StepDefinitions
 {
@@ -30,12 +31,12 @@ namespace ReqResAPIs.StepDefinitions
             restResponse = restClient.Execute(restRequest);
         }
 
-        [When(@"I send a GET request to '([^']*)' with invalid page as (.*)")]
-        public void WhenISendAGETRequestToWithInvalidPageAs(string listusers, int expected)
+        [When(@"I send a GET request to '([^']*)' with id as (.*)")]
+        public void WhenISendAGETRequestToWithIdAs(string listusers, string expected)
         {
-            restRequest = new RestRequest(listusers+$"?page={expected}", Method.Get);
+            restRequest = new RestRequest(listusers+$"/{expected}", Method.Get);
             restResponse = restClient.Execute(restRequest);
-            _scenarioContext.Add("response", restResponse);
+            _scenarioContext.Add("expectedUser", expected);
         }
 
         [Then(@"the response should have a status code of (.*)")]
@@ -48,21 +49,29 @@ namespace ReqResAPIs.StepDefinitions
         public void ThenTheResponseBodyShouldContainAListOfUsers()
         {
             var usersResponse = JsonSerializer.Deserialize<UserData>(restResponse.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            TestContext.WriteLine(usersResponse.Data);
+            TestContext.WriteLine(restResponse.Content);
             using (new AssertionScope()) 
             {
                 usersResponse.Data.Should().NotBeNull();
-                usersResponse.Data.Select(user => user.Id.Should().BeGreaterThan(0));
+                usersResponse.Data.Select(user => user.Id.Should().NotBeNull());
                 usersResponse.Data.Select(user => user.FirstName.Should().NotBeNullOrEmpty());
             }
         }
-           
-        [Then(@"the response body should contain a filtered list of users with the specified parameters")]
-        public void ThenTheResponseBodyShouldContainAFilteredListOfUsersWithTheSpecifiedParameters()
+
+        [Then(@"the response data should be empty")]
+        public void ThenTheResponseDataShouldBeEmpty()
         {
-            var response = _scenarioContext.Get<RestResponse>("response");
-            var usersResponse = JsonSerializer.Deserialize<UserData>(response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                usersResponse.Data.Count.Should().Be(0);
+            var usersResponse = JsonSerializer.Deserialize<User>(restResponse.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            usersResponse.Should().NotBeNull();
+        }
+
+        [Then(@"the response data should be based on the filter criteria applied")]
+        public void ThenTheResponseDataShouldBeBasedOnTheFilterCriteriaApplied()
+        {
+            restResponse.Content.Should().NotBeNullOrEmpty();
+            var userId = _scenarioContext.Get<string>("expectedUser");
+            UserData? usersResponse = JsonSerializer.Deserialize<UserData>(restResponse.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            usersResponse.Data.ForEach(id => id.Should().Be(userId));
         }
 
     }

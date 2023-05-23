@@ -29,6 +29,7 @@ namespace ReqResAPIs.StepDefinitions
             restRequest = new RestRequest(users, Method.Post);
             restRequest.RequestFormat = DataFormat.Json;
             restRequest.AddJsonBody(data);
+            _scenarioContext.Add("userdata", data);
         }
 
         [When(@"I send a POST request to the users endpoint")]
@@ -47,10 +48,11 @@ namespace ReqResAPIs.StepDefinitions
         [Then(@"the response should have the new user details")]
         public void ThenTheResponseShouldHaveTheNewUserDetails()
         {
+            var userdata = _scenarioContext.Get<NewUser>("userdata");
             var res = JsonSerializer.Deserialize<UserResponse>(restResponse.Content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-            res.id.Should().NotBeNull();
-            res.name.Should().NotBeNullOrEmpty();
-            TestContext.WriteLine($"{ res.id },{ res.name}");
+            TestContext.WriteLine(restResponse.Content);
+            res.job.Should().Be(userdata.job);
+            res.name.Should().Be(userdata.name);
         }
 
         [Then(@"the job value should be null")]

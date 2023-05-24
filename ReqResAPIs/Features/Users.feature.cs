@@ -101,7 +101,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 5
- testRunner.When("I send a GET request to \'/users\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I send a GET request to users", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 6
  testRunner.Then("the response should have a status code of 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -141,7 +141,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 10
- testRunner.When("I send a GET request to \'/users\' with id as 33", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I send a GET request to users with id as 33", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 11
  testRunner.Then("the response should have a status code of 404", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -181,7 +181,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 15
- testRunner.When("I send a GET request to \'/users\' with id as 3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I send a GET request to users with id as 3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 16
  testRunner.Then("the response should have a status code of 200", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");

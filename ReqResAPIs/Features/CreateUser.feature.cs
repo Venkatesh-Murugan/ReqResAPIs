@@ -28,7 +28,7 @@ namespace ReqResAPIs.Features
         
         private string[] _featureTags = ((string[])(null));
         
-#line 1 "CreateUsers.feature"
+#line 1 "CreateUser.feature"
 #line hidden
         
         [NUnit.Framework.OneTimeSetUpAttribute()]
@@ -105,13 +105,13 @@ this.ScenarioInitialize(scenarioInfo);
                             "name",
                             "job"});
                 table1.AddRow(new string[] {
-                            "venkatesh",
+                            "venkat",
                             "contractor"});
                 table1.AddRow(new string[] {
-                            "karun",
+                            "karunN",
                             "employee"});
 #line 5
- testRunner.Given("I create a request payload for \'/users\' as below", ((string)(null)), table1, "Given ");
+ testRunner.Given("I create a request payload for users as below", ((string)(null)), table1, "Given ");
 #line hidden
 #line 9
  testRunner.When("I send a POST request to the users endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
@@ -158,7 +158,7 @@ this.ScenarioInitialize(scenarioInfo);
                 table2.AddRow(new string[] {
                             "venkateshyem"});
 #line 14
- testRunner.Given("I create a request payload for \'/users\' as below", ((string)(null)), table2, "Given ");
+ testRunner.Given("I create a request payload for users as below", ((string)(null)), table2, "Given ");
 #line hidden
 #line 17
  testRunner.When("I send a POST request to the users endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");

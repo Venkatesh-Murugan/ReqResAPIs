@@ -11,54 +11,54 @@ namespace ReqResAPIs.StepDefinitions
     [Binding]
     public class CreateUsersStepDefinitions : BaseAPITest
     {
-        private RestRequest restRequest;
-        private RestResponse restResponse;
-        private RestClient restClient;
+        private RestResponse _response;
         private readonly ScenarioContext _scenarioContext;
+        private APIHelper<UserData> _helper;
+        private NewUser requestPayload;
 
         public CreateUsersStepDefinitions(ScenarioContext _context)
         {
             _scenarioContext = _context;
-            restClient = new RestClient(BaseURL);
+            _helper = new APIHelper<UserData>($"{BaseURL}/users");
         }
 
-        [Given(@"I create a request payload for '([^']*)' as below")]
-        public void GivenICreateARequestPayload(string users, Table table)
+        [Given(@"I create a request payload for users as below")]
+        public void GivenICreateARequestPayloadForUsersAsBelow(Table table)
         {
             var data = table.CreateInstance<NewUser>();
-            restRequest = new RestRequest(users, Method.Post);
-            restRequest.RequestFormat = DataFormat.Json;
-            restRequest.AddJsonBody(data);
-            _scenarioContext.Add("userdata", data);
+            requestPayload = new NewUser()
+            {
+                name = data.name,
+                job = data.job
+            };
         }
 
         [When(@"I send a POST request to the users endpoint")]
         public void WhenISendAPOSTRequestToTheUsersEndpoint()
         {
-            restResponse = restClient.Execute(restRequest);
+            _response = _helper.PostMethod(String.Empty, requestPayload);
         } 
 
         [Then(@"the status code should be (.*)")]
         public void ThenTheStatusCodeShouldBe(int code)
         {
             var expectedCode = code;
-            restResponse.StatusCode.Should().Be((HttpStatusCode)expectedCode);
+            _response.StatusCode.Should().Be((HttpStatusCode)expectedCode);
         }
 
         [Then(@"the response should have the new user details")]
         public void ThenTheResponseShouldHaveTheNewUserDetails()
         {
-            var userdata = _scenarioContext.Get<NewUser>("userdata");
-            var res = JsonSerializer.Deserialize<UserResponse>(restResponse.Content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-            TestContext.WriteLine(restResponse.Content);
-            res.job.Should().Be(userdata.job);
-            res.name.Should().Be(userdata.name);
+            var res = JsonSerializer.Deserialize<UserResponse>(_response.Content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            TestContext.WriteLine(_response.Content);
+            res.job.Should().Be(requestPayload.job);
+            res.name.Should().Be(requestPayload.name);
         }
 
         [Then(@"the job value should be null")]
         public void ThenTheJobValueShouldBeNull()
         {
-            var res = JsonSerializer.Deserialize<UserResponse>(restResponse.Content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            var res = JsonSerializer.Deserialize<UserResponse>(_response.Content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
             res.job.Should().BeNull();
         }
 

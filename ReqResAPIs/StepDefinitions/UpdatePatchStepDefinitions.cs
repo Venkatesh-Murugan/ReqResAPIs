@@ -19,27 +19,30 @@ namespace ReqResAPIs.StepDefinitions
             _helper = new APIHelper<UserData>($"{BaseURL}/users");
         }
 
-
+        [When(@"I update the user with id (.*) using PATCH method")]
         [When(@"I update the user with id (.*) using PUT method")]
-        public void WhenIUpdateTheUserWithIdUsingPUTMethod(int id)
+        public void WhenIUpdateTheUserWithId(int id)
         {
-            string name = Utility.GenerateString();
+            string name = Utility.GenerateString(5);
             var requestData = new
             {
                 name = name,
-                job = "tester"
+                job = $"{Utility.GenerateString(5)}"
             };
             _response = _helper.PutMethod($"{id}", requestData);
             _scenarioContext.Add("newname", name);
+            _scenarioContext.Add("job", requestData.job);
         }
 
         [Then(@"user details should be updated")]
         public void ThenUserDetailsShouldBeUpdated()
         {
-            string name = _scenarioContext.Get<string>("newname");
+            string expectedName = _scenarioContext.Get<string>("newname");
+            string expectedJob = _scenarioContext.Get<string>("job");
             var response = JsonSerializer.Deserialize<UserResponse>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             _response.StatusCode.Should().Be(HttpStatusCode.OK);
-            response.name.Should().Be(name);
+            response.name.Should().Be(expectedName);
+            response.job.Should().Be(expectedJob);
         }
     }
 }

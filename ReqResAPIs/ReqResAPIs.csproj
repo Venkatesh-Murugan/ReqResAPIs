@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Configurations>Debug;Release;Dev;Test</Configurations>
+    <Configurations>Debug;Release;SIT;Test;UAT</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +22,10 @@
   </ItemGroup>
 
     <ItemGroup>
-      <None Update="appsettings.Dev.json">
+      <None Update="appsettings.UAT.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="appsettings.SIT.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="appsettings.Test.json">

@@ -46,10 +46,12 @@ public class APIHelper<T> where T : class
         return restRequest;
     }
 
-    public RestRequest CreatePatchRequest()
+    public RestRequest CreatePatchRequest(object payload)
     {
         var restRequest = new RestRequest(string.Empty, Method.Patch);
         restRequest.AddHeader("Accept", "application/json");
+        restRequest.RequestFormat = DataFormat.Json;
+        restRequest.AddJsonBody(payload);
 
         return restRequest;
     }
@@ -79,6 +81,13 @@ public class APIHelper<T> where T : class
     public RestResponse PutMethod(string endpoint, object content)
     {
         var request = CreatePutRequest(content);
+        var response = GetResponse(endpoint, request);
+
+        return response;
+    }
+    public RestResponse PatchMethod(string endpoint, object content)
+    {
+        var request = CreatePatchRequest(content);
         var response = GetResponse(endpoint, request);
 
         return response;

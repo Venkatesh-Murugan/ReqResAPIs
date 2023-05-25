@@ -70,5 +70,36 @@ namespace ReqResAPIs.StepDefinitions
             _response.Content.Should().Contain(userId);
         }
 
+        [Then(@"the response data should contain (.*) and (.*)")]
+        public void ThenTheResponseDataShouldContainTheUser(string firstname, string lastname)
+        {
+            var usersResponse = JsonSerializer.Deserialize<UserData>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            int totalPages = usersResponse.total_pages;
+            int currentPage = usersResponse.page;
+            int totalRecords = usersResponse.total;
+
+            if(usersResponse.data.Count > 0)
+            {
+                TestContext.WriteLine(currentPage);
+                foreach (var user in usersResponse.data)
+                {
+                   if(user.first_name.Equals(firstname) && user.last_name.Equals(lastname))
+                   {
+                        Assert.Pass($"User {firstname} {lastname} Exists.");
+                        break;
+                   }
+                }
+                if(currentPage < totalPages)
+                {
+                    currentPage++;
+                   _response = _helper.GetMethod($"?page={currentPage}");
+                    ThenTheResponseDataShouldContainTheUser(firstname, lastname);
+                }
+            }
+            else
+            {
+                Assert.Fail($"User Response is not available");
+            }
+        }
     }
 }

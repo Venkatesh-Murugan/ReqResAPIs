@@ -4,13 +4,13 @@ namespace ReqResAPIs.Models
 {
     public class UserData
     {
-        public long Page { get; set; }
+        public int page { get; set; }
 
-        public long PerPage { get; set; }
+        public int per_page { get; set; }
 
-        public long Total { get; set; }
+        public int total { get; set; }
 
-        public long TotalPages { get; set; }
+        public int total_pages { get; set; }
 
         public List<User> data { get; set; }
 

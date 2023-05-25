@@ -12,13 +12,11 @@ namespace ReqResAPIs.StepDefinitions
     public class CreateUsersStepDefinitions : BaseAPITest
     {
         private RestResponse _response;
-        private readonly ScenarioContext _scenarioContext;
         private APIHelper<UserData> _helper;
         private NewUser requestPayload;
 
-        public CreateUsersStepDefinitions(ScenarioContext _context)
+        public CreateUsersStepDefinitions()
         {
-            _scenarioContext = _context;
             _helper = new APIHelper<UserData>($"{BaseURL}/users");
         }
 

@@ -2,12 +2,11 @@
 
 public class Utility
  {
-    public static string GenerateString()
+    public static string GenerateString(int size)
     {
         Random res = new Random();
 
         string str = "abcdefghijklmnopqrstuvwxyz";
-        int size = 6;
 
         string randomString = "";
 

@@ -15,3 +15,12 @@ Scenario: Retrieve a list of users with invalid id parameter
 	When I send a GET request to users with id as 3
 	Then the response should have a status code of 200
 	And the response data should be based on the filter criteria applied
+
+Scenario Outline: Validate Single user by name
+	When I send a GET request to users
+	Then the response should have a status code of 200
+	And the response data should contain <firstname> and <lastname>
+	Examples: 
+	| firstname | lastname |
+	| Lindsay   | Ferguson |
+	| Tracey    | Ramos    |

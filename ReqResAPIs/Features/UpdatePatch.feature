@@ -4,3 +4,7 @@ As an automation engineer, I need to update and delete user and validate the res
 Scenario: Update a user using PUT
 	When I update the user with id 2 using PUT method
 	Then user details should be updated
+
+Scenario: Update a user using PATCH
+	When I update the user with id 2 using PATCH method
+	Then user details should be updated

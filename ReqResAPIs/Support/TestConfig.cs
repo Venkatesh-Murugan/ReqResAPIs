@@ -4,11 +4,10 @@ namespace ReqResAPIs.Support;
 
 public class TestConfig
 {
-    private static string FindConfigFile() => new DirectoryInfo(Directory.GetCurrentDirectory()).GetFiles("appsettings." + "*" + ".json").FirstOrDefault().FullName;
-
+    private static string? FindConfigFile() => new DirectoryInfo(Directory.GetCurrentDirectory()).GetFiles("appsettings." + "*" + ".json").FirstOrDefault()?.FullName;
     public static IConfiguration Get()
     {
-        var currentConfigFile = FindConfigFile();
+        string? currentConfigFile = FindConfigFile();
         return new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile(currentConfigFile)

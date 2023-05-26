@@ -7,7 +7,7 @@ namespace ReqResAPIs.Support;
 public class BaseAPITest
 {
     IConfiguration Configuration => TestConfig.Get();
-    protected string BaseURL => Configuration["ReqResBaseURL"];
+    protected string? BaseURL => Configuration["ReqResBaseURL"];
 
 
 }

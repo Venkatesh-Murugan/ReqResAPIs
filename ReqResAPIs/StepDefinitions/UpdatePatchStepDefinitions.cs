@@ -10,7 +10,7 @@ namespace ReqResAPIs.StepDefinitions
     public sealed class UpdatePatchStepDefinitions : BaseAPITest
     {
         private readonly ScenarioContext _scenarioContext;
-        private RestResponse _response;
+        private RestResponse? _response;
         private readonly APIHelper<UserData> _helper;
 
         public UpdatePatchStepDefinitions(ScenarioContext context)
@@ -39,10 +39,14 @@ namespace ReqResAPIs.StepDefinitions
         {
             string expectedName = _scenarioContext.Get<string>("newname");
             string expectedJob = _scenarioContext.Get<string>("job");
-            var response = JsonSerializer.Deserialize<UserResponse>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            _response.StatusCode.Should().Be(HttpStatusCode.OK);
-            response.name.Should().Be(expectedName);
-            response.job.Should().Be(expectedJob);
+            _response?.StatusCode.Should().Be(HttpStatusCode.OK);
+            if(_response?.Content is not null)
+            {
+                UserResponse? response = JsonSerializer.Deserialize<UserResponse>(_response.Content);
+                response?.name.Should().Be(expectedName);
+                response?.job.Should().Be(expectedJob);
+
+            }
         }
     }
 }

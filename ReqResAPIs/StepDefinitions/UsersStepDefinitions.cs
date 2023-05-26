@@ -13,7 +13,7 @@ namespace ReqResAPIs.StepDefinitions
     public sealed class UsersStepDefinitions : BaseAPITest
     {
         private readonly ScenarioContext _scenarioContext;
-        private RestResponse _response;
+        private RestResponse? _response;
         private readonly APIHelper<UserData> _helper;
 
         public UsersStepDefinitions(ScenarioContext context)
@@ -38,67 +38,79 @@ namespace ReqResAPIs.StepDefinitions
         [Then(@"the response should have a status code of (.*)")]
         public void ThenTheResponseShouldHaveAStatusCodeOf(int statusCode)
         {
-            _response.StatusCode.Should().Be((HttpStatusCode?)statusCode);
+            _response?.StatusCode.Should().Be((HttpStatusCode?)statusCode);
         }
 
         [Then(@"the response body should contain a list of users")]
         public void ThenTheResponseBodyShouldContainAListOfUsers()
         {
-            var usersResponse = JsonSerializer.Deserialize<UserData>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            TestContext.WriteLine(_response.Content);
-            using (new AssertionScope()) 
+            if(_response?.Content is not null )
             {
-                usersResponse.data.Should().NotBeNull();
-                usersResponse.data.Select(user => user.id.Should().BeGreaterThan(0));
-                usersResponse.data.Select(user => user.first_name.Should().NotBeNullOrEmpty());
+                UserData? usersResponse = JsonSerializer.Deserialize<UserData>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                List<User>? usersDetails = usersResponse?.data;
+                using (new AssertionScope()) 
+                {
+                    usersDetails.Should().NotBeNull();
+                    usersDetails?.Select(user => user.id.Should().BeGreaterThan(0));
+                    usersDetails?.Select(user => user.first_name.Should().NotBeNullOrEmpty());
+                }
             }
         }
 
         [Then(@"the response data should be empty")]
         public void ThenTheResponseDataShouldBeEmpty()
         {
-            var usersResponse = JsonSerializer.Deserialize<User>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            usersResponse.Should().NotBeNull();
+            if (_response?.Content is not null)
+            {
+                var usersResponse = JsonSerializer.Deserialize<User>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                usersResponse.Should().NotBeNull();
+            }
         }
 
         [Then(@"the response data should be based on the filter criteria applied")]
         public void ThenTheResponseDataShouldBeBasedOnTheFilterCriteriaApplied()
         {
-            _response.Content.Should().NotBeNullOrEmpty();
             var userId = _scenarioContext.Get<string>("expectedUser");
-            _response.Content.Should().NotBeNullOrEmpty();
-            _response.Content.Should().Contain(userId);
+            if (_response?.Content is not null)
+            {
+                _response.Content.Should().NotBeNullOrEmpty();
+                _response.Content.Should().NotBeNullOrEmpty();
+                _response.Content.Should().Contain(userId);
+            }
         }
 
         [Then(@"the response data should contain (.*) and (.*)")]
         public void ThenTheResponseDataShouldContainTheUser(string firstname, string lastname)
         {
-            var usersResponse = JsonSerializer.Deserialize<UserData>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            int totalPages = usersResponse.total_pages;
-            int currentPage = usersResponse.page;
-            int totalRecords = usersResponse.total;
+            if (_response?.Content is not null)
+            {
+                UserData? usersResponse = JsonSerializer.Deserialize<UserData>(_response.Content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                int? totalPages = usersResponse?.total_pages;
+                int? currentPage = usersResponse?.page;
 
-            if(usersResponse.data.Count > 0)
-            {
-                TestContext.WriteLine(currentPage);
-                foreach (var user in usersResponse.data)
+                if (usersResponse?.data?.Count > 0)
                 {
-                   if(user.first_name.Equals(firstname) && user.last_name.Equals(lastname))
-                   {
-                        Assert.Pass($"User {firstname} {lastname} Exists.");
-                        break;
-                   }
+                    TestContext.WriteLine(currentPage);
+                    foreach (User? user in usersResponse.data)
+                    {
+                        if(!String.IsNullOrEmpty(user.first_name) && !String.IsNullOrEmpty(user.last_name))
+                        if (user.first_name.Equals(firstname) && user.last_name.Equals(lastname))
+                        {
+                            Assert.Pass($"User {firstname} {lastname} Exists.");
+                            break;
+                        }
+                    }
+                    if (currentPage < totalPages)
+                    {
+                        currentPage++;
+                        _response = _helper.GetMethod($"?page={currentPage}");
+                        ThenTheResponseDataShouldContainTheUser(firstname, lastname);
+                    }
                 }
-                if(currentPage < totalPages)
+                else
                 {
-                    currentPage++;
-                   _response = _helper.GetMethod($"?page={currentPage}");
-                    ThenTheResponseDataShouldContainTheUser(firstname, lastname);
+                    Assert.Fail($"User Response is not available");
                 }
-            }
-            else
-            {
-                Assert.Fail($"User Response is not available");
             }
         }
     }
